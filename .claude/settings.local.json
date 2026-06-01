@@ -21,7 +21,8 @@
       "PowerShell(git *)",
       "PowerShell(npx tsc --noEmit; if \\($?\\) { \"TSC OK\" })",
       "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\" } catch { \"Dev server not running: $\\($_.Exception.Message\\)\" })",
-      "PowerShell(git remote *)"
+      "PowerShell(git remote *)",
+      "PowerShell(npx tsc --noEmit; if \\($?\\) { try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing; \"TSC OK · Status: $\\($r.StatusCode\\)\" } catch { \"TSC OK · dev down\" } })"
     ]
   }
 }

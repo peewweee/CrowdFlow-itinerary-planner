@@ -224,13 +224,19 @@ export default function Home() {
         />
       </div>
 
-      {/* "You're here" — locate button, top-right. */}
-      <button
-        onClick={handleLocate}
-        disabled={locating}
-        aria-label="Show my location"
-        className="absolute right-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-sky-600 shadow-lg transition hover:bg-slate-50 active:scale-95 disabled:opacity-70"
-      >
+      {/* "You're here" — locate button + hint, top-right. */}
+      <div className="absolute right-4 top-4 z-30 flex items-center gap-2">
+        {!userLocation && (
+          <span className="rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium text-slate-500 shadow-sm backdrop-blur-sm">
+            Tap to see current location
+          </span>
+        )}
+        <button
+          onClick={handleLocate}
+          disabled={locating}
+          aria-label="Show my location"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-sky-600 shadow-lg transition hover:bg-slate-50 active:scale-95 disabled:opacity-70"
+        >
         {locating ? (
           <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
             <circle
@@ -263,7 +269,8 @@ export default function Home() {
             <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
           </svg>
         )}
-      </button>
+        </button>
+      </div>
 
       {/* Location error toast. */}
       {locateError && (
