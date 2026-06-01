@@ -18,7 +18,10 @@
       "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\")",
       "PowerShell(npx tsc --noEmit; if \\($?\\) { $r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\" })",
       "PowerShell(git remote -v; \"---BRANCH---\"; git branch --show-current; \"---STATUS---\"; git status --short)",
-      "PowerShell(git *)"
+      "PowerShell(git *)",
+      "PowerShell(npx tsc --noEmit; if \\($?\\) { \"TSC OK\" })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:3000/\" -UseBasicParsing; \"Status: $\\($r.StatusCode\\)\" } catch { \"Dev server not running: $\\($_.Exception.Message\\)\" })",
+      "PowerShell(git remote *)"
     ]
   }
 }

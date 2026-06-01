@@ -20,7 +20,8 @@ body {
 }
 
 /* Reset Leaflet's default white box around our custom divIcon pins. */
-.crowdflow-pin {
+.crowdflow-pin,
+.crowdflow-userdot {
   background: transparent;
   border: none;
 }

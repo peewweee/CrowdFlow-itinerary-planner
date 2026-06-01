@@ -16,7 +16,7 @@ import { ItineraryForm } from "@/components/ItineraryForm";
 import { SpotCard } from "@/components/SpotCard";
 import { WeatherBar } from "@/components/WeatherBar";
 import { SplashScreen } from "@/components/SplashScreen";
-import type { MapMarker } from "@/components/MapView";
+import type { MapMarker, UserLocation } from "@/components/MapView";
 
 // Leaflet can't render on the server — load the map client-side only.
 const MapView = dynamic(() => import("@/components/MapView"), {
@@ -42,10 +42,51 @@ export default function Home() {
   const [weather, setWeather] = useState<Weather | null>(null);
   const [reports, setReports] = useState<CrowdReport[]>([]);
 
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locateError, setLocateError] = useState<string | null>(null);
+  const [focusTick, setFocusTick] = useState(0); // bumps to recenter the map
+
   useEffect(() => {
     setMounted(true);
     setDayIndex(new Date().getDay());
     dataService.listCities().then(setCities);
+  }, []);
+
+  // Auto-dismiss the location error toast.
+  useEffect(() => {
+    if (!locateError) return;
+    const t = setTimeout(() => setLocateError(null), 5000);
+    return () => clearTimeout(t);
+  }, [locateError]);
+
+  const handleLocate = useCallback(() => {
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setLocateError("Location isn't supported on this device.");
+      return;
+    }
+    setLocating(true);
+    setLocateError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        });
+        setFocusTick((t) => t + 1);
+        setLocating(false);
+      },
+      (err) => {
+        setLocating(false);
+        setLocateError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location blocked. Enable it for this site in your browser settings."
+            : "Couldn't get your location. Please try again."
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
   }, []);
 
   const handleGenerate = useCallback(
@@ -176,8 +217,60 @@ export default function Home() {
       <main className="relative h-screen w-screen overflow-hidden">
       {/* Full-screen map living behind everything else. */}
       <div className="absolute inset-0 z-0">
-        <MapView markers={markers} />
+        <MapView
+          markers={markers}
+          userLocation={userLocation}
+          focusTick={focusTick}
+        />
       </div>
+
+      {/* "You're here" — locate button, top-right. */}
+      <button
+        onClick={handleLocate}
+        disabled={locating}
+        aria-label="Show my location"
+        className="absolute right-4 top-4 z-30 flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-sky-600 shadow-lg transition hover:bg-slate-50 active:scale-95 disabled:opacity-70"
+      >
+        {locating ? (
+          <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <circle cx="12" cy="12" r="8" />
+            <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+          </svg>
+        )}
+      </button>
+
+      {/* Location error toast. */}
+      {locateError && (
+        <div className="absolute right-4 top-16 z-30 max-w-[16rem] rounded-lg bg-slate-900/85 px-3 py-2 text-xs text-white shadow-lg backdrop-blur-sm">
+          {locateError}
+        </div>
+      )}
 
       {/* Circular back button, top-left, only once a plan exists. */}
       {itinerary && (

@@ -220,7 +220,7 @@ Curated data guarantees the demo never breaks on a bad API response, and lets us
 - ✅ Crowd-score explainer tooltip (cards + map popups)
 
 **Phase D — Deployment:** ✅ Done
-- Live on Vercel: **https://crowdflowph.vercel.app** (GitHub repo: `peewweee/itinerary-planner`; every push to `main` auto-deploys). Env vars set in Vercel.
+- Live on Vercel: **https://crowdflowph.vercel.app** (GitHub repo: `peewweee/CrowdFlow-itinerary-planner`; every push to `main` auto-deploys). Env vars set in Vercel.
 
 **Next up (optional):**
 - ⏭️ "You're here" live location pin (browser Geolocation; needs the HTTPS Vercel URL)

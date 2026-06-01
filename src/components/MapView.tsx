@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import {
+  Circle,
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+} from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { CrowdResult, Spot } from "@/types";
@@ -12,6 +19,12 @@ export interface MapMarker {
   spot: Spot;
   crowd: CrowdResult;
   order: number;
+}
+
+export interface UserLocation {
+  lat: number;
+  lng: number;
+  accuracy: number; // meters
 }
 
 // A numbered, crowd-colored pin built with divIcon — avoids the broken
@@ -34,6 +47,41 @@ function pinIcon(order: number, hex: string): L.DivIcon {
   });
 }
 
+// The blue "you are here" dot.
+function userDotIcon(): L.DivIcon {
+  return L.divIcon({
+    className: "crowdflow-userdot",
+    html: `<div style="
+        width:16px;height:16px;border-radius:50%;
+        background:#2563eb;border:3px solid white;
+        box-shadow:0 0 0 2px rgba(37,99,235,.35), 0 1px 3px rgba(0,0,0,.4);">
+      </div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+}
+
+// Flies to the user's position whenever `trigger` changes (i.e. each time the
+// "Locate me" button is tapped) — not on every coordinate update.
+function RecenterOnUser({
+  location,
+  trigger,
+}: {
+  location: UserLocation | null;
+  trigger: number;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!location) return;
+    map.flyTo([location.lat, location.lng], Math.max(map.getZoom(), 15), {
+      duration: 0.8,
+    });
+    // Only react to explicit locate taps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trigger]);
+  return null;
+}
+
 function FitBounds({ markers }: { markers: MapMarker[] }) {
   const map = useMap();
   useEffect(() => {
@@ -51,7 +99,15 @@ function FitBounds({ markers }: { markers: MapMarker[] }) {
   return null;
 }
 
-export default function MapView({ markers }: { markers: MapMarker[] }) {
+export default function MapView({
+  markers,
+  userLocation = null,
+  focusTick = 0,
+}: {
+  markers: MapMarker[];
+  userLocation?: UserLocation | null;
+  focusTick?: number;
+}) {
   const center: [number, number] = markers.length
     ? [markers[0].spot.lat, markers[0].spot.lng]
     : [14.5896, 120.9747]; // default: Manila
@@ -88,6 +144,34 @@ export default function MapView({ markers }: { markers: MapMarker[] }) {
           </Popup>
         </Marker>
       ))}
+      {userLocation && (
+        <>
+          <Circle
+            center={[userLocation.lat, userLocation.lng]}
+            radius={userLocation.accuracy}
+            pathOptions={{
+              color: "#2563eb",
+              fillColor: "#3b82f6",
+              fillOpacity: 0.12,
+              weight: 1,
+            }}
+          />
+          <Marker
+            position={[userLocation.lat, userLocation.lng]}
+            icon={userDotIcon()}
+            zIndexOffset={1000}
+          >
+            <Popup>
+              <div className="text-sm">
+                <strong>You are here</strong>
+                <br />
+                Accuracy ±{Math.round(userLocation.accuracy)} m
+              </div>
+            </Popup>
+          </Marker>
+        </>
+      )}
+      <RecenterOnUser location={userLocation} trigger={focusTick} />
       <FitBounds markers={markers} />
     </MapContainer>
   );

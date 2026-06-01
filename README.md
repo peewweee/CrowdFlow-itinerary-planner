@@ -6,8 +6,6 @@ CrowdFlow builds you a day plan, estimates how crowded each spot is, and automat
 
 ### 🔗 Live app: **[crowdflowph.vercel.app](https://crowdflowph.vercel.app)**
 
-Open it on any phone (Safari/Chrome) and **Add to Home Screen** for an app-like icon.
-
 > Capstone / thesis demo project. For the full design rationale, see [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
 
 ---
@@ -88,7 +86,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## ☁️ Deployment
 
-The app is deployed on Vercel at **[crowdflowph.vercel.app](https://crowdflowph.vercel.app)**, connected to the `peewweee/itinerary-planner` GitHub repo. **Every push to `main` auto-deploys.**
+The app is deployed on Vercel at **[crowdflowph.vercel.app](https://crowdflowph.vercel.app)**, connected to the `peewweee/CrowdFlow-itinerary-planner` GitHub repo. **Every push to `main` auto-deploys.**
 
 To reproduce the setup from scratch:
 
