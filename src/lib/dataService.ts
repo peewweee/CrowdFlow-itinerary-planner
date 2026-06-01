@@ -135,10 +135,19 @@ class MockDataService implements DataService {
     }
   }
 
-  async getWeather(_city: string): Promise<Weather> {
-    // Mocked: a typical sunny PH afternoon. Swap for a real weather API later.
-    void _city;
-    await delay(200);
+  async getWeather(city: string): Promise<Weather> {
+    // Try the live weather route; fall back to a typical sunny PH afternoon
+    // if the API key is missing or the request fails.
+    try {
+      const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+      if (res.ok) {
+        const data = (await res.json()) as { weather: Weather | null };
+        if (data.weather) return data.weather;
+      }
+    } catch {
+      // ignore and fall back
+    }
+    await delay(150);
     return { condition: "clear", tempC: 32, isDaytime: true };
   }
 }
