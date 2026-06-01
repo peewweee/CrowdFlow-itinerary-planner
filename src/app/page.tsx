@@ -214,7 +214,7 @@ export default function Home() {
   return (
     <>
       {splash}
-      <main className="relative h-screen w-screen overflow-hidden">
+      <main className="relative h-dvh w-screen overflow-hidden">
       {/* Full-screen map living behind everything else. */}
       <div className="absolute inset-0 z-0">
         <MapView
@@ -303,7 +303,7 @@ export default function Home() {
 
       {/* Slide-up bottom sheet that holds the form / itinerary. */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center">
-        <div className="animate-sheet-up pointer-events-auto flex max-h-[85vh] w-full max-w-2xl flex-col rounded-t-3xl bg-white shadow-2xl ring-1 ring-black/5">
+        <div className="animate-sheet-up pointer-events-auto flex max-h-[85dvh] w-full max-w-2xl flex-col rounded-t-3xl bg-white pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl ring-1 ring-black/5">
           {/* Drag handle — tap to minimize / expand */}
           <button
             onClick={() => setSheetMinimized((m) => !m)}
@@ -335,7 +335,7 @@ export default function Home() {
             className={`overflow-y-auto px-5 transition-all duration-300 ease-out ${
               sheetMinimized
                 ? "max-h-0 pb-0 opacity-0"
-                : "max-h-[76vh] pb-7 opacity-100"
+                : "max-h-[76dvh] pb-7 opacity-100"
             }`}
           >
             {!itinerary ? (
