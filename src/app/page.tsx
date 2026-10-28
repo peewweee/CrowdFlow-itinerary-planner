@@ -392,10 +392,6 @@ export default function Home() {
                   ) : null
                 )}
 
-                <p className="pt-1 text-center text-xs text-slate-400">
-                  Tap a pin on the map for crowd details · 🟢 quiet 🟡 filling
-                  up 🔴 packed
-                </p>
               </div>
             )}
           </div>
